@@ -127,7 +127,7 @@ async function signIn({ email, password }) {
   }
 }
 
-async function update({ name, email, newPassword, currentPassword }) {
+async function update({ name, email, newPassword, currentPassword, userId }) {
   try {
     //Code Logic
 
@@ -161,7 +161,7 @@ async function update({ name, email, newPassword, currentPassword }) {
     }
 
     /* Database Level Validation */
-    const userFound = await User.findOne({ email });
+    const userFound = await User.findById(userId);
     if (!userFound)
       throw new AppError("User not found in database", StatusCodes.BAD_REQUEST);
 
@@ -173,16 +173,10 @@ async function update({ name, email, newPassword, currentPassword }) {
         StatusCodes.BAD_REQUEST
       );
     }
-    let hashedPassword = null;
-    if (newPassword) {
-      hashedPassword = bcrypt.hashSync(
-        currentPassword,
-        +process.env.SALT_ROUNDS
-      );
-    }
+
     userFound.name = name || userFound.name;
     userFound.email = email || userFound.email;
-    userFound.password = hashedPassword || userFound.password;
+    userFound.password = newPassword || userFound.password;
     return await userFound.save();
   } catch (error) {
     console.log("Unable to Update User due to:", error);

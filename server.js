@@ -78,9 +78,9 @@ app.use(async (err, req, res, next) => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+app.listen(port, (err) => {
   if (err) {
-    console.log("Error has been occurred:");
+    console.log("Error has been occurred:" + err);
   }
-  console.log(`Server has started successfully in ${ServerConfig.PORT} port`);
+  console.log(`Server has started successfully in ${process.env.PORT} port`);
 });

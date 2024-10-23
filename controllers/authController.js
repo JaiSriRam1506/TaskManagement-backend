@@ -139,6 +139,7 @@ async function update(req, res) {
       email: req.body.email,
       newPassword: req.body.newPassword,
       currentPassword: req.body.currentPassword,
+      userId: req.user._id,
     });
 
     /*  Once the call is successfull like User Registration has completed customise the user data and 

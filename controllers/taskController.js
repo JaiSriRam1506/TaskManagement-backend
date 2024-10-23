@@ -9,6 +9,7 @@ async function getAllCards(req, res) {
     /* Call the Service for User Registration */
     let { datePreference, status } = req.params;
     let userId = req.user._id;
+    console.log("-----------------", datePreference, status, userId);
     const response = await TaskService.getAllCards(
       datePreference,
       status,
@@ -96,7 +97,8 @@ async function getCard(req, res) {
 async function addCard(req, res) {
   try {
     const cardDetails = req.body;
-    const response = await TaskService.addCard(cardDetails);
+    const userId = req.user._id;
+    const response = await TaskService.addCard(cardDetails, userId);
 
     SuccessResponse.data = response;
     SuccessResponse.message = "Card added successfully";
@@ -117,9 +119,90 @@ async function addCard(req, res) {
       .json(ErrorResponse);
   }
 }
+
+async function updateCard(req, res) {
+  try {
+    const cardDetails = req.body;
+    const { cardId } = req.params;
+    const response = await TaskService.updateCard(cardId, cardDetails);
+
+    SuccessResponse.data = response;
+    SuccessResponse.message = "Card updated successfully";
+
+    /* Remember the sequence */
+    res.status(StatusCodes.OK);
+    res.json(SuccessResponse);
+    return res;
+  } catch (error) {
+    console.log("Unable to update card", error);
+    ErrorResponse.message = error.explanation;
+    ErrorResponse.data = error;
+    ErrorResponse.stack =
+      process.env.NODE_ENV === "development" ? error.stack : null;
+
+    return res
+      .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(ErrorResponse);
+  }
+}
+
+async function updateCardStatus(req, res) {
+  try {
+    const { task, status } = req.body;
+    const { cardId } = req.params;
+    const response = await TaskService.updateCardStatus(cardId, task, status);
+
+    SuccessResponse.data = response;
+    SuccessResponse.message = "Card status updated successfully";
+
+    /* Remember the sequence */
+    res.status(StatusCodes.OK);
+    res.json(SuccessResponse);
+    return res;
+  } catch (error) {
+    console.log("Unable to update status of card", error);
+    ErrorResponse.message = error.explanation;
+    ErrorResponse.data = error;
+    ErrorResponse.stack =
+      process.env.NODE_ENV === "development" ? error.stack : null;
+
+    return res
+      .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(ErrorResponse);
+  }
+}
+
+async function deleteCard(req, res) {
+  try {
+    const { cardId } = req.params;
+    const userId = req.user._id;
+    const response = await TaskService.deleteCard(cardId, userId);
+
+    SuccessResponse.data = response;
+    SuccessResponse.message = "Card deleted successfully";
+
+    /* Remember the sequence */
+    res.status(StatusCodes.OK);
+    res.json(SuccessResponse);
+    return res;
+  } catch (error) {
+    console.log("Unable to delete the card", error);
+    ErrorResponse.message = error.explanation;
+    ErrorResponse.data = error;
+    ErrorResponse.stack =
+      process.env.NODE_ENV === "development" ? error.stack : null;
+
+    return res
+      .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(ErrorResponse);
+  }
+}
 module.exports = {
   getAllCards,
   getAnalytics,
   getCard,
   addCard,
+  updateCard,
+  updateCardStatus,
+  deleteCard,
 };
