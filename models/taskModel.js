@@ -24,7 +24,6 @@ const taskSchema = new mongoose.Schema(
     ],
     assignee: {
       type: String,
-      default: "",
     },
     dueDate: {
       type: String,
